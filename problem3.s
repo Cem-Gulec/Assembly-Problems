@@ -4,6 +4,8 @@ bufferSmaller:		.space 1024
 prompt: 		.asciiz "Enter the input string: "
 spaceChar: 		.asciiz " "
 newLine: 		.asciiz "\n"
+palindrome: 		.asciiz " is palindrome"
+notPalindrome: 		.asciiz " is not palindrome"
 		
 		.text
 		.globl main
@@ -12,9 +14,9 @@ newLine: 		.asciiz "\n"
 # t1: spaceChar
 # t2: character read
 # t3: bufferSmaller variable
-# t4: 
-# t5:
-# t6: 
+# t4: small letter variable
+# t5: counter
+# t6: loop2
 # t7: newLine
 
 
@@ -33,6 +35,7 @@ main:	li $v0, 4  # print string
 	li $a1, 100
 	syscall
 
+# Goal:
 # abBaBBc
 # abbabbc
 			
@@ -44,7 +47,7 @@ main:	li $v0, 4  # print string
 
 # loop for reading string
 Loop1:	lb $t2, 0($t0)  # load character read 
-	beq $t2, $t7, end  # check if it is new line character
+	beq $t2, $t7, end1  # check if it is new line character
 	add $t5, $t5, 1  # if character is not endline, increment counter
 	add $t0, $t0, 1  # if not add 1 to iteration variable
 	ori $t4, $t2, 0x20  # oring with 20 gives us small letter
@@ -54,18 +57,46 @@ Loop1:	lb $t2, 0($t0)  # load character read
 	j Loop1  # return back to head of the loop
 	
 
-# loop for checking first and last
-Loop2:	la $t6, bufferSmaller  # putting address of bufferSmaller to $t6
+# loop for checking recurrently from 
+#first and last indexes to determine if it is palindrome
+Loop2:	bge $t2, $t4, endPalindrome 
+	lb $t6, ($t4)  # $t6 = last index value
+	lb $t7, ($t2)  # $t7 = first index value
+	
+	bne $t6, $t7, endNotPalindrome
+	sub $t4, $t4, 1  # decrement last index by 1
+	add $t2, $t2, 1  # increment first index by 1
+	j Loop2
+	
 
-
-end:	li $v0, 4  # Print string
+end1:	li $v0, 4  # Print string
 	la $a0, bufferSmaller
 	syscall
 	
-	#j Loop2  # after printing jump to loop where we check if it is palindrome
+	sub $t5, $t5, 1  # len - 1
+	add $t2, $0, $0  #  resetting t2 to be used for first index
+	add $t4, $t5, $a0  # $t4 = last index (updated with length)
+	add $t2, $t2, $a0  # $t2 = first index
+	j Loop2  # after printing jump to loop where we check if it is palindrome
 	
-	
-	# exit program
-	li $v0, 10
+
+endPalindrome: 	
+	li $v0, 4  
+	la $a0, palindrome
 	syscall
 	
+	j endProgram	
+			
+	
+endNotPalindrome: 	
+	li $v0, 4  
+	la $a0, notPalindrome
+	syscall
+	
+	j endProgram
+	
+
+# exit program
+endProgram:	
+	li $v0, 10
+	syscall
