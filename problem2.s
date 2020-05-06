@@ -102,6 +102,54 @@ j loop_q2_1
 endloop_q2_1:
 # PARSE AND SAVE INTO MEMORY END
 
+
+# loop second string
+# PARSE AND SAVE INTO MEMORY START
+la $s1, second_matrix_array
+#add $s0, $zero, $zero	# $s0: index of first_matrix_array
+add $t0, $a1, $zero	# $t0 now holds the string address
+loop_q2_2:
+lb $t1, 0($t0) 		# load 1 byte - a char
+beq $t1, '\n', endloop_q2_2	# endline
+beq $t1, ' ', nextchar_q2_2	# go to next character over the string if it's a space
+# if not a space
+## while loop to get full integer
+# t2 holds the total value if current integers
+add $t2, $zero, $zero	# $t2 = 0
+j aa_2
+integer_continued_q2_2:
+# can be entered conditionally
+# burada 10 ile carpip t2 ye ekle
+li $t7, 10
+# multiple $t2 my 10
+mult $t2, $t7
+mflo $t2	# t2 = t2 * 10
+aa_2:
+andi $t1, $t1, 0x0F	# ascii char to integer conversion
+add $t2, $t2, $t1
+# if next value isn't space jump to 
+### NEXT VAL CHECK START
+addi $t7, $t0, 1 	# &t7 = next character
+lb $t7, 0($t7)
+# eger \n veya ' ' ise save to memeory
+beq $t7, '\n', save_mem_q2_2
+beq $t7, ' ' , save_mem_q2_2
+# otherwise go to restricted area
+	# increase char pointer + 1
+	addi $t0, $t0, 1  	# next char
+	# set t1 to next char
+	lb $t1, 0($t0)
+j integer_continued_q2_2
+### NEXT VAL CHECK END
+save_mem_q2_2:
+sw $t2, 0($s1)		# save integer to first_matrix_array[$s0]
+addi $s1, $s1, 4	# next location
+nextchar_q2_2:
+addi $t0, $t0, 1  	# next char
+j loop_q2_2
+endloop_q2_2:
+# PARSE AND SAVE INTO MEMORY END
+
 ##### TESTS #####
 la $s0, first_matrix_array
 lw $s1, 0($s0)
