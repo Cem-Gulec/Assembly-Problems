@@ -8,17 +8,17 @@ newLine: 		.asciiz "\n"
 		.text
 		.globl main
 
-main:	li $v0, 4
-	la $a0, prompt
+main:	li $v0, 4  # print string 
+	la $a0, prompt  # take input string from user
 	syscall
 	
 	la $t0, buffer
-	la $t1, spaceChar
+	la $t1, spaceChar  # space char
 	lb $t1, 0($t1)
-	la $t7, newLine
+	la $t7, newLine  # newline char
 	lb $t7, 0($t7)
 	
-	li $v0, 8
+	li $v0, 8  # read string
 	la $a0, buffer
 	li $a1, 100
 	syscall
@@ -26,21 +26,21 @@ main:	li $v0, 4
 # abBaBBc
 # abbabbc
 			
-	la $t3, bufferSmaller
-	add $t4, $0, $0
-	li $s0, 90
+	la $t3, bufferSmaller  # holding space for small version of string
+	add $t4, $0, $0  # t4=0
+	li $s0, 90  # s0 = 90
 	
 
 Loop:	lb $t2, 0($t0)  #load character read 
 	beq $t2, $t7, end  #check if it is new line character
-	add $t0, $t0, 1
-	ori $t4, $t2, 0x20
-	sb $t4, 0($t3)
-	add $t3, $t3, 1
+	add $t0, $t0, 1  # if not add 1 to iteration variable
+	ori $t4, $t2, 0x20  # oring with 20 gives us small letter
+	sb $t4, 0($t3)  # store smaller char version 
+	add $t3, $t3, 1  # iterate to the next location
 
-	j Loop
+	j Loop  # return back to head of the loop
 	
-end:	li $v0, 4 #Print string
+end:	li $v0, 4  # Print string
 	la $a0, bufferSmaller
 	syscall 
 	
