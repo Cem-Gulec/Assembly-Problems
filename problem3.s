@@ -8,6 +8,16 @@ newLine: 		.asciiz "\n"
 		.text
 		.globl main
 
+# t0: buffer variable
+# t1: spaceChar
+# t2: character read
+# t3: bufferSmaller variable
+# t4: 
+# t5:
+# t6: 
+# t7: newLine
+
+
 main:	li $v0, 4  # print string 
 	la $a0, prompt  # take input string from user
 	syscall
@@ -32,7 +42,8 @@ main:	li $v0, 4  # print string
 	li $s0, 90  # s0 = 90
 	
 
-Loop:	lb $t2, 0($t0)  # load character read 
+# loop for reading string
+Loop1:	lb $t2, 0($t0)  # load character read 
 	beq $t2, $t7, end  # check if it is new line character
 	add $t5, $t5, 1  # if character is not endline, increment counter
 	add $t0, $t0, 1  # if not add 1 to iteration variable
@@ -40,11 +51,19 @@ Loop:	lb $t2, 0($t0)  # load character read
 	sb $t4, 0($t3)  # store smaller char version 
 	add $t3, $t3, 1  # iterate to the next location
 
-	j Loop  # return back to head of the loop
+	j Loop1  # return back to head of the loop
 	
+
+# loop for checking first and last
+Loop2:	la $t6, bufferSmaller  # putting address of bufferSmaller to $t6
+
+
 end:	li $v0, 4  # Print string
 	la $a0, bufferSmaller
-	syscall 
+	syscall
+	
+	#j Loop2  # after printing jump to loop where we check if it is palindrome
+	
 	
 	# exit program
 	li $v0, 10
