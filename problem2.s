@@ -148,7 +148,32 @@ nextchar_q2_2:
 addi $t0, $t0, 1  	# next char
 j loop_q2_2
 endloop_q2_2:
+
+li $t2, -1
+sw $t2, 0($s1)	
 # PARSE AND SAVE INTO MEMORY END
+
+
+# CALCULATE THE DIMENSION OF SECOND MATRIX
+
+# first, calcualte the length of 2nd matrix
+add $t2, $zero, $zero		# t2 is the counter with initial value of 0
+add $t0, $zero, $zero		# iterator for second matrix array
+q2_calc_sec_legth:
+lw $t1, second_matrix_array($t0)	# get the content of the second matrix
+beq $t1, -1, end_q2_calc
+# increase counter
+addi $t2, $t2, 1	# t2 += 1
+#li $v0, 1	# pritning fo rdebugging purposes
+#add $a0, $zero, $t1
+#syscall
+addi $t0, $t0, 4
+j q2_calc_sec_legth
+end_q2_calc:
+
+# make division to calcualte dimension of second matrix
+div $t2, $a3
+mflo $s7	# s7 holds the dimension of the second matrix
 
 ##### TESTS #####
 la $s0, first_matrix_array
@@ -159,5 +184,7 @@ mult $s1, $s2
 mfhi $t0
 mflo $t1
 
+# EXIT
+EXIT:
 li $v0, 10 # terminate program
 syscall
