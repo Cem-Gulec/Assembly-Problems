@@ -172,8 +172,84 @@ j q2_calc_sec_legth
 end_q2_calc:
 
 # make division to calcualte dimension of second matrix
-div $t2, $a3
+div $t2, $a3	# t2 is the total length of second matrix
 mflo $s7	# s7 holds the dimension of the second matrix
+
+
+# corresponding c++ code:
+#    for (int i = 0; i < a2; i++) // 3 times, one row of A each time
+#    {
+#        for (int j = 0; j < x; j++) // 2 times
+#        {
+#            int res = 0;
+#            for (int k = 0; k < a3; k++)
+#            {
+#                res = res + (A[i][k] * B[k][j]);
+#            }
+#            cout << res << " ";
+#        }
+#        cout << endl;
+#    }
+    
+# other loop, $a1 times
+li $t0,0		# i = 0
+q2_mult_outher_loop:
+beq $t0, $a2, q2_mult_outher_loop_end	# loop until i < a2
+	li $t1,0		# j = 0
+	q2_mult_inner_loop:
+	beq $t1, $s7, q2_mult_inner_loop_end
+		li $s1, 0	#	s1 = res variable, initially zero
+		li $t2, 0	# k = 0
+		q2_mult_main_loop:
+		beq $t2, $a3, q2_mult_main_loop_end
+		# res = res + (A[i][k] * B[k][j]);
+		# A[i][k] = a3 * i + k (address_of_matrix_1)
+		
+		# === calculate A[i][k] start ===
+		# multiple $a3 with i 
+		mult $a3, $t0		# a3 * i
+		mflo $t3		# t3 = a3 * i
+		add $t3, $t3, $t2	# t3 = a3 * i + k 	(index of the A to access)
+		sll $t3, $t3, 2		# (t3 = a3 * i + k) * 4	(memory offset)
+		lw $t3, first_matrix_array($t3)	# t3 =A[i][k]
+		# === calculate A[i][k] end   ===
+		# === calculate B[k][j] start ===
+		# B[k][j] = k * x + j				0, 2, 4
+		mult $t2, $s7		# k * x
+		mflo $t4		# t4 = k * x
+		add $t4, $t4, $t1	# t4 = k * x + j       (index of the B to access)
+		sll $t4, $t4, 2		# (t4 = k * x + j) * 4 (memory offset)
+		lw $t4, second_matrix_array($t4) # t4 = B[k][j]
+		# === calculate B[k][j] end   ===
+		
+		  # $t3 = A[i][k]
+		  # $t4 = B[k][j]
+		# multiply A[i][k] * B[k][j]
+		mult $t3, $t4		# A[i][k] * B[k][j]
+		mflo $t5
+		add $s1, $s1, $t5	# res = res + A[i][k] * B[k][j]
+
+		addi $t2, $t2, 1	# k++
+		j q2_mult_main_loop
+		q2_mult_main_loop_end:
+		## print result
+		li $v0, 1	# print_int
+		add $a0, $s1, $zero	# $t7 to be printed
+		syscall
+		## print space
+		li $a0, 32	# 32 is the ascii code for space
+		li $v0, 11  # syscall number for printing character
+		syscall
+	addi $t1, $t1, 1	#j++
+	j q2_mult_inner_loop
+	q2_mult_inner_loop_end:
+	## print newline hcar
+	li $a0, 10	# 10 is the ascii code for LF
+	li $v0, 11  # syscall number for printing character
+	syscall
+addi $t0, $t0, 1	# i++
+j q2_mult_outher_loop
+q2_mult_outher_loop_end:
 
 ##### TESTS #####
 la $s0, first_matrix_array
