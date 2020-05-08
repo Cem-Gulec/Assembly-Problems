@@ -13,8 +13,19 @@ syscall # call operating system to perform operation
 
 li $v0, 5 # read_int
 syscall
-move $t0, $v0 # n stored in $t0
-move $t7, $v0 # $t7 also stores copy of n
+
+move $a0, $v0
+jal Procedure_1
+j EXIT
+
+# $a0: int = number of iteration
+Procedure_1:
+# save $a0 to the stack
+addi $sp $sp, -4 	# allcoate space for 1 word
+sw $a0, 0($sp)		# save $a0 into stack
+
+move $t0, $a0 # n stored in $t0
+move $t7, $a0 # $t7 also stores copy of n, which is going to be used in second loop
 
 # ititialize #$t1=a=1, $t2=b=1
 li $t1, 1
@@ -75,5 +86,13 @@ sub $t7, $t7, 1 # decrement by 1
 j whileB
 endwhileB:
 
+# end of Procedure_1
+# restore $a0
+lw $a0, 0($sp)		# restore $a0
+addi $sp, $sp, 4	# deallocate space
+jr $ra			# jump back to the return address
+
+# EXIT
+EXIT:
 li $v0, 10 # terminate program
 syscall
