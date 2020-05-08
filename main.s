@@ -32,6 +32,18 @@ syscall
 li $t9, 1
 bne $v0, $t9, check_next_2	# skip to next if this isn't the selection
 # 1 is selected, call it's procedure
+li $v0, 4 # system call code for printing string = 4
+la $a0, out_string # load address of string to be printed into $a0
+syscall # call operating system to perform operation
+
+li $v0, 5 # read_int
+syscall
+
+move $a0, $v0
+jal Procedure_1	# go to procedure with argument in $a0	
+j MENU		# jump back to the menu after procedure returns
+
+
 check_next_2:
 li $t9, 2
 bne $v0, $t9, check_next_3	# skip to next if this isn't the selection
@@ -83,6 +95,87 @@ check_next_4:
 li $t9, 4
 beq $v0, $t9, EXIT	# exit if 4 is selected
 j MENU			# jump back to MENU again
+
+
+
+
+
+# $a0: int = number of iteration
+Procedure_1:
+# save $a0 to the stack
+addi $sp $sp, -4 	# allcoate space for 1 word
+sw $a0, 0($sp)		# save $a0 into stack
+
+move $t0, $a0 # n stored in $t0
+move $t7, $a0 # $t7 also stores copy of n, which is going to be used in second loop
+
+# ititialize #$t1=a=1, $t2=b=1
+li $t1, 1
+li $t2, 1
+
+# print a:
+li $v0, 4
+la $a0, a
+syscall
+
+whileA:	# loop
+blez $t0, endwhileA # loop until n reaches 0 and jump to endwhile
+# print current a value
+li $v0, 1 # print_int
+move $a0, $t1
+syscall	# prints a's value
+li $v0, 11  # syscall number for printing character
+# print space, 32 is ASCII code for space
+li $a0, 32
+syscall # space -> ' '
+
+sll $t3, $t2,1 # shift left b to calculate 2b
+add $t2, $t2, $t1 # b = a + b
+add $t1, $t1, $t3 # a = a + 2b
+sub $t0, $t0, 1 # decrement by 1
+j whileA
+endwhileA:
+
+# new line
+li $v0, 11
+li $a0, 10
+syscall
+
+# ititialize a=1, b=1 again
+li $t1, 1
+li $t2, 1
+
+# print b:
+li $v0, 4
+la $a0, b
+syscall
+
+whileB:	# loop
+blez $t7, endwhileB # loop until n reaches 0 and jump to endwhile
+# print current a value
+li $v0, 1 # print_int
+move $a0, $t2
+syscall	# prints b's value
+# print space, 32 is ASCII code for space
+li $a0, 32
+li $v0, 11  # syscall number for printing character
+syscall # space -> ' '
+
+sll $t3, $t2,1 # shift left b to calculate 2b
+add $t2, $t2, $t1 # b = a + b
+add $t1, $t1, $t3 # a = a + 2b
+sub $t7, $t7, 1 # decrement by 1
+j whileB
+endwhileB:
+
+# end of Procedure_1
+# restore $a0
+lw $a0, 0($sp)		# restore $a0
+addi $sp, $sp, 4	# deallocate space
+jr $ra			# jump back to the return address
+
+
+
 
 
 
