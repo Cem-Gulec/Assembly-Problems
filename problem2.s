@@ -49,6 +49,7 @@ la $a0, first_matrix
 la $a1, second_matrix
 jal Procedure_q2	# go to procedure with arguments in $a0-$a3
 j EXIT
+
 # $a0: addr = address of first matrix string
 # $a1: addr = address of second matrix string
 # $a2: int    = first dimension
@@ -267,10 +268,11 @@ lw $a3, 0($sp)		# restore $a3
 lw $a2, 4($sp)		# restore $a2
 lw $a1, 8($sp)		# restore $a1
 lw $a0, 12($sp)		# restore $a0
+addi $sp, $sp, 16	# deallocate 4 words
 jr $ra			# jump back to the menu
 
 
-addi $sp, $sp, 16	# deallocate 4 words
+
 
 # EXIT
 EXIT:
