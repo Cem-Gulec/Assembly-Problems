@@ -11,6 +11,7 @@ menu: .asciiz "\n\nMain Menu:\n1. Square Root Approximate\n2. Matrix Multiplicat
 out_string: .asciiz "\nEnter the number of iteration for the series: "
 a_string: .asciiz "a: "
 b_string: .asciiz "b: "
+goodbye_string: .asciiz "Program ends. Bye :)"
 # queston 2 strings
 enter_f_matrix: .asciiz "\nEnter the first matrix: "
 enter_s_matrix: .asciiz "\nEnter the second matrix: "
@@ -503,5 +504,9 @@ Procedure_3:
 
 
 EXIT:
+li $v0, 4
+la $a0, goodbye_string  # print out goodbye string
+syscall
+
 li $v0, 10 # terminate program
 syscall
