@@ -9,6 +9,7 @@ enter_f_matrix: .asciiz "\nEnter the first matrix: "
 enter_s_matrix: .asciiz "\nEnter the second matrix: "
 enter_fd_matrix: .asciiz "\nEnter the first dimension of first matrix: "
 enter_sd_matrix: .asciiz "\nEnter the second dimension of first matrix: "
+multiplication_matrix: .asciiz "\nMultiplication matrix:\n"
 
 .text ## Assembly language instructions go in text segment
 main: ## iiz Start of code section
@@ -47,12 +48,18 @@ add $a3, $zero, $v0	# move readed int to $a3
 la $a0, first_matrix
 la $a1, second_matrix
 jal Procedure_q2	# go to procedure with arguments in $a0-$a3
-
+j EXIT
 # $a0: addr = address of first matrix string
 # $a1: addr = address of second matrix string
 # $a2: int    = first dimension
 # $a3: int    = second dimension
 Procedure_q2:
+# Save $a0-$a3 into stack to restore later
+addi $sp, $sp, -16	# allocate 4 words
+sw $a0, 12($sp)		# save $a0
+sw $a1, 8($sp)		# save $a1
+sw $a2, 4($sp)		# save $a2
+sw $a3, 0($sp)		# save $a3
 
 #la $s0, first_matrix_array	# address of parsed first matrix Array<int>
 # loop first string
@@ -175,6 +182,9 @@ end_q2_calc:
 div $t2, $a3	# t2 is the total length of second matrix
 mflo $s7	# s7 holds the dimension of the second matrix
 
+li $v0, 4 # system call code for printing string = 4
+la $a0, multiplication_matrix # Multiplication matrix:
+syscall # call operating system to perform operation
 
 # corresponding c++ code:
 #    for (int i = 0; i < a2; i++) // 3 times, one row of A each time
@@ -189,9 +199,9 @@ mflo $s7	# s7 holds the dimension of the second matrix
 #            cout << res << " ";
 #        }
 #        cout << endl;
-#    }
-    
-# other loop, $a1 times
+#    }  
+  
+# outher loop, $a1 times
 li $t0,0		# i = 0
 q2_mult_outher_loop:
 beq $t0, $a2, q2_mult_outher_loop_end	# loop until i < a2
@@ -251,14 +261,16 @@ addi $t0, $t0, 1	# i++
 j q2_mult_outher_loop
 q2_mult_outher_loop_end:
 
-##### TESTS #####
-la $s0, first_matrix_array
-lw $s1, 0($s0)
-addi $s0, $s0,4
-lw $s2, 0($s0)
-mult $s1, $s2
-mfhi $t0
-mflo $t1
+# end of Procedure_2
+# restore $a0-$a3 registers from stack
+lw $a3, 0($sp)		# restore $a3
+lw $a2, 4($sp)		# restore $a2
+lw $a1, 8($sp)		# restore $a1
+lw $a0, 12($sp)		# restore $a0
+jr $ra			# jump back to the menu
+
+
+addi $sp, $sp, 16	# deallocate 4 words
 
 # EXIT
 EXIT:
