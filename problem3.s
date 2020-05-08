@@ -45,12 +45,12 @@ main:	li $v0, 4  # print string
 	li $s0, 90  # s0 = 90
 	
 	move $a0, $v0
-	jal Procedure_1
+	jal Procedure_3
 	j endProgram
 	
 
 # loop for reading string
-Procedure_1:	
+Procedure_3:	
 	
 	addi $sp $sp, -4 	# allcoate space for 1 word
 	sw $a0, 0($sp)		# save $a0 into stack
@@ -97,7 +97,7 @@ Procedure_1:
 	la $a0, palindrome
 	syscall
 	
-	j endProgram	
+	j Procedure_3_end	
 			
 	
 	endNotPalindrome: 	
@@ -105,12 +105,12 @@ Procedure_1:
 	la $a0, notPalindrome
 	syscall
 	
-	j endProgram
-	
+
+	Procedure_3_end:	
 	lw $a0, 0($sp)		# restore $a0
 	addi $sp, $sp, 4	# deallocate space
 	jr $ra			# jump back to the return address
-	
+
 
 # exit program
 endProgram:	
