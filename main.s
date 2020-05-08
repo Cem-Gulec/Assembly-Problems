@@ -9,8 +9,8 @@ bufferSmaller:		.space 1024
 welcome: .asciiz "Welcome to our MIPS project!\n"
 menu: .asciiz "\n\nMain Menu:\n1. Square Root Approximate\n2. Matrix Multiplication\n3. Palindrome\n4. Exit\nPlease select an option: "
 out_string: .asciiz "\nEnter the number of iteration for the series: "
-a: .asciiz "a: "
-b: .asciiz "b: "
+a_string: .asciiz "a: "
+b_string: .asciiz "b: "
 # queston 2 strings
 enter_f_matrix: .asciiz "\nEnter the first matrix: "
 enter_s_matrix: .asciiz "\nEnter the second matrix: "
@@ -25,6 +25,7 @@ palindrome: 		.asciiz " is palindrome"
 notPalindrome: 		.asciiz " is not palindrome"
 
 .text ## Assembly language instructions go in text segment
+.globl main
 main:
 # MENU
 li $v0, 4 # system call code for printing string = 4
@@ -151,7 +152,7 @@ li $t2, 1
 
 # print a:
 li $v0, 4
-la $a0, a
+la $a0, a_string
 syscall
 
 whileA:	# loop
@@ -183,7 +184,7 @@ li $t2, 1
 
 # print b:
 li $v0, 4
-la $a0, b
+la $a0, b_string
 syscall
 
 whileB:	# loop
