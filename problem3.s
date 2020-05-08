@@ -44,9 +44,19 @@ main:	li $v0, 4  # print string
 	add $t5, $0, $0  # t5=0  -> counter for length of the string
 	li $s0, 90  # s0 = 90
 	
+	move $a0, $v0
+	jal Procedure_1
+	j endProgram
+	
 
 # loop for reading string
-Loop1:	lb $t2, 0($t0)  # load character read 
+Procedure_1:	
+	
+	addi $sp $sp, -4 	# allcoate space for 1 word
+	sw $a0, 0($sp)		# save $a0 into stack
+	
+	Loop1:
+	lb $t2, 0($t0)  # load character read 
 	beq $t2, $t7, end1  # check if it is new line character
 	add $t5, $t5, 1  # if character is not endline, increment counter
 	add $t0, $t0, 1  # if not add 1 to iteration variable
@@ -57,9 +67,10 @@ Loop1:	lb $t2, 0($t0)  # load character read
 	j Loop1  # return back to head of the loop
 	
 
-# loop for checking recurrently from 
-#first and last indexes to determine if it is palindrome
-Loop2:	bge $t2, $t4, endPalindrome 
+	# loop for checking recurrently from 
+	#first and last indexes to determine if it is palindrome
+	Loop2:	
+	bge $t2, $t4, endPalindrome 
 	lb $t6, ($t4)  # $t6 = last index value
 	lb $t7, ($t2)  # $t7 = first index value
 	
@@ -69,7 +80,8 @@ Loop2:	bge $t2, $t4, endPalindrome
 	j Loop2
 	
 
-end1:	li $v0, 4  # Print string
+	end1:	
+	li $v0, 4  # Print string
 	la $a0, bufferSmaller
 	syscall
 	
@@ -80,7 +92,7 @@ end1:	li $v0, 4  # Print string
 	j Loop2  # after printing jump to loop where we check if it is palindrome
 	
 
-endPalindrome: 	
+	endPalindrome: 	
 	li $v0, 4  
 	la $a0, palindrome
 	syscall
@@ -88,12 +100,16 @@ endPalindrome:
 	j endProgram	
 			
 	
-endNotPalindrome: 	
+	endNotPalindrome: 	
 	li $v0, 4  
 	la $a0, notPalindrome
 	syscall
 	
 	j endProgram
+	
+	lw $a0, 0($sp)		# restore $a0
+	addi $sp, $sp, 4	# deallocate space
+	jr $ra			# jump back to the return address
 	
 
 # exit program
