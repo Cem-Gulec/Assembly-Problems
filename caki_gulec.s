@@ -22,8 +22,8 @@ multiplication_matrix: .asciiz "\nMultiplication matrix:\n"
 prompt: 		.asciiz "Enter the input string: "
 spaceChar: 		.asciiz " "
 newLine: 		.asciiz "\n"
-palindrome: 		.asciiz " is palindrome"
-notPalindrome: 		.asciiz " is not palindrome"
+palindrome: 		.asciiz " is palindrome."
+notPalindrome: 		.asciiz " is not palindrome."
 
 .text ## Assembly language instructions go in text segment
 .globl main
