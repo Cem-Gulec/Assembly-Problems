@@ -1,1 +1,1 @@
-# CSE338-Assembly-Problems
+**Course name**: Computer Organization (CSE3038)
